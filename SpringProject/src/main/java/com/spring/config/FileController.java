@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -31,29 +33,29 @@ public class FileController {
 	public String   showFile(@RequestParam("file") List<MultipartFile> fileList) throws IOException {
 //		System.out.println(fileList.get(0).getOriginalFilename());
 //		System.out.println(fileList.get(0).getSize());
-		InputStream inputStream = fileList.get(0).getInputStream();
-        String text = IOUtils.toString(inputStream); 
-        System.out.println(text);
+//		InputStream inputStream = fileList.get(0).getInputStream();
+//        String text = IOUtils.toString(inputStream); 
+//        System.out.println(text);
 //        String updateSQL = "insert into DummyTable(id, fileName) values (?, ?)";
         try {
 			
-        	Class.forName("com.mysql.cj.jdbc.Driver");/*registration for the driver so that it could return connection of the JDBC API*/
-        	Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb","root","Krsna@007");//user name and password are the second last parameter are included here
-        	/*Statement stmt=con.createStatement();
-        	prepareStatement("insert into DummyTable values(8,'vikas')");
-        	stmt.execute("insert into DummyTable values(8,'vikas')");
-        	File file = new File("new.txt");
-        	FileInputStream inputStream = new FileInputStream(file);
-        	Statement stmt=con.createStatement();
-        	  stmt.executeUpdate("insert into DummyTable values(1,'vikas')");*/
-        	File f1=new File(fileList.get(0).getOriginalFilename());
-        	FileInputStream fileInputStream=new FileInputStream(f1);
-        	PreparedStatement pstmt = con.prepareStatement("insert into DummyTable(id, name, file_data) values(?, ?, ?)");
-            pstmt.setInt(1, 2);
-            pstmt.setString(2, fileList.get(0).getOriginalFilename());
-            pstmt.setBlob(3, fileInputStream,(int)f1.length());
-            pstmt.execute();
-            System.out.println(pstmt.execute());
+//        	Class.forName("com.mysql.cj.jdbc.Driver");/*registration for the driver so that it could return connection of the JDBC API*/
+//        	Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb","root","Krsna@007");//user name and password are the second last parameter are included here
+//        	/*Statement stmt=con.createStatement();
+//        	prepareStatement("insert into DummyTable values(8,'vikas')");
+//        	stmt.execute("insert into DummyTable values(8,'vikas')");
+//        	File file = new File("new.txt");
+//        	FileInputStream inputStream = new FileInputStream(file);
+//        	Statement stmt=con.createStatement();
+//        	  stmt.executeUpdate("insert into DummyTable values(1,'vikas')");*/
+//        	File f1=new File(fileList.get(0).getOriginalFilename());
+//        	FileInputStream fileInputStream=new FileInputStream(f1);
+//        	PreparedStatement pstmt = con.prepareStatement("insert into DummyTable(id, name, file_data) values(?, ?, ?)");
+//            pstmt.setInt(1, 2);
+//            pstmt.setString(2, fileList.get(0).getOriginalFilename());
+//            pstmt.setBlob(3, fileInputStream,(int)f1.length());
+//            pstmt.execute();
+//            System.out.println(pstmt.execute());
         	/*ResultSet rs=stmt.executeQuery("select * from Persons");
 			while (rs.next()) {
 				System.out.println(rs.getInt(1) + " " + rs.getString(2));
@@ -91,56 +93,25 @@ public class FileController {
         return "Vikas";  
 	}
 	
-	
-	
-	@PostMapping(value = "/fetchfile")
-	public String   fetchFile() throws IOException
+	@PostMapping(value = "/fetchEmp")
+	public List<Emp>  fetchFile() throws IOException
 	{
+		
+		List<Emp> l= new ArrayList<>();
 		try{  
-			 Class.forName("com.mysql.cj.jdbc.Driver");  
-			 Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb","root","Krsna@007");              
-			
-			 FileOutputStream out= new FileOutputStream(new File("E:\\Repo\\ui-components\\rohit.txt")) ;
-			 PreparedStatement pstmt=con.prepareStatement("select * from dummyTable");
-			 ResultSet rs=pstmt.executeQuery();
-			 while(rs.next()) {
-		         Blob blob = rs.getBlob("file_data");
-		         byte [] bytes = blob.getBytes(1, (int)blob.length());
-		         for(int i=0; i<bytes.length;i++) {
-		            System.out.print((char)bytes[i]);
-		            out.write((char)bytes[i]);	
-		         }
-			 }
-			
-//			 byte[] buffer = new byte[4096];
-//             while ((bytesRead = .read(buffer)) != -1) {
-//                 outputStream.write(buffer, 0, bytesRead);
-//             }
-			 
-//			 System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.get);
-//			 byte[] byteArray = rs.getBytes(3);  
-//			 InputStream r = c.getBinaryStream();
-//			 out.write(byteArray);
-//				byte[] buf = new byte[1024];
-//				int len = 0;
-//				while ((len = r.read(buf)) != -1) {
-//					out.write(buf, 0, len);
-//				}
-//			 String text = IOUtils.toString(r); 
-//		     System.out.println((text));           
-//			 int i;  
-//			 while((i=r.read())!=-1)  
-//			 fw.write((char)i);               
-//			 fw.close();  
-//			 con.close(); 
-		
-		
-		}
-			 catch (Exception e) {
-
-			System.out.println(e);
-		}
-		return 	"Mohit";
+			Class.forName("com.mysql.cj.jdbc.Driver");  
+			Connection con=DriverManager.getConnection(  
+			"jdbc:mysql://localhost:3306/sonoo","root","Krsna@007");  
+			//here sonoo is database name, root is username and password  
+			Statement stmt=con.createStatement();  
+			ResultSet rs=stmt.executeQuery("select * from emp");  
+			while(rs.next()) {
+				l.add(new Emp(rs.getInt(1), rs.getString(2), rs.getInt(3)));
+			System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getInt(3));
+			}
+			con.close();  
+			}catch(Exception e){ System.out.println(e);}  
+		return l 	;
 	}
  
 }
